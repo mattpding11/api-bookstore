@@ -1,2 +1,2 @@
 # wompi-app-test
-Aplicacion de productos con posib
+Aplicacion de productos, con pago a través de wompi
