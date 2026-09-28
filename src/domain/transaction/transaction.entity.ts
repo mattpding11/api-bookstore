@@ -189,4 +189,9 @@ export class Transaction {
   get updatedAt(): Date {
     return this.props.updatedAt;
   }
+
+  // Without this, JSON.stringify would serialize the private `props` field as-is instead of a flat object.
+  toJSON(): TransactionProps {
+    return { ...this.props };
+  }
 }
