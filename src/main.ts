@@ -1,6 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { AppModule, ObserveInstrument } from './app.module.js';
 import { AllExceptionsFilter } from './infrastructure/http/filters/all-exceptions.filter.js';
 import {
@@ -18,6 +21,21 @@ async function bootstrap() {
   });
 
   const configService = app.get(ConfigService<EnvironmentVariables, true>);
+
+  app.use(helmet());
+  // No JWT on the client: auth relies on cookies. Any cookie set in a controller
+  // must use { httpOnly: true, secure: process.env.NODE_ENV === 'PRODUCTION', sameSite: 'strict' }.
+  app.use(cookieParser());
+  app.setGlobalPrefix('api/v1');
+
+  const swaggerDocument = SwaggerModule.createDocument(
+    app,
+    new DocumentBuilder()
+      .setTitle('Bookstore Payment API')
+      .setVersion('1.0')
+      .build(),
+  );
+  SwaggerModule.setup('api/v1/docs', app, swaggerDocument);
 
   app.useGlobalPipes(
     new ValidationPipe({

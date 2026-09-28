@@ -122,6 +122,7 @@ export class ProcessTransactionUseCase {
       amountInCents: transaction.totalAmountCents,
       currency: product.currency,
       customerEmail: customer.email,
+      paymentMethodType: input.paymentMethodType,
       paymentMethodToken: input.paymentMethodToken,
     });
 

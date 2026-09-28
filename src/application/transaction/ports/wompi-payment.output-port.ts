@@ -7,6 +7,7 @@ export type WompiChargeRequest = {
   readonly amountInCents: number;
   readonly currency: string;
   readonly customerEmail: string;
+  readonly paymentMethodType: string;
   readonly paymentMethodToken: string;
 };
 

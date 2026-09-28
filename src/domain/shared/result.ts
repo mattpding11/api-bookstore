@@ -3,6 +3,10 @@ export class Success<T, E> {
   readonly isFailure = false as const;
 
   constructor(readonly value: T) {}
+
+  getValue(): T {
+    return this.value;
+  }
 }
 
 export class Failure<T, E> {
@@ -10,6 +14,10 @@ export class Failure<T, E> {
   readonly isFailure = true as const;
 
   constructor(readonly error: E) {}
+
+  getError(): E {
+    return this.error;
+  }
 }
 
 export type Result<T, E> = Success<T, E> | Failure<T, E>;

@@ -18,4 +18,20 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   DATABASE_URL!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  WOMPI_API_URL!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  WOMPI_PUBLIC_KEY!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  WOMPI_PRIVATE_KEY!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  WOMPI_INTEGRITY_KEY!: string;
 }
