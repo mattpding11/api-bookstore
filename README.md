@@ -57,46 +57,8 @@ $ pnpm run test:e2e
 $ pnpm run test:cov
 ```
 
+![alt text](image.png)
 
- ✓ src/domain/product/product.entity.spec.ts (7 tests) 22ms
- ✓ src/domain/customer/customer.entity.spec.ts (7 tests) 23ms
- ✓ src/domain/transaction/transaction.entity.spec.ts (9 tests) 22ms
- ✓ src/domain/delivery/delivery.entity.spec.ts (7 tests) 24ms
- ✓ src/application/transaction/use-cases/process-transaction.use-case.spec.ts (8 tests) 45ms
- ✓ src/infrastructure/http/app.controller.spec.ts (1 test) 837ms
-       ✓ should return "Server is running...."  832ms
- ✓ src/infrastructure/http/controllers/transaction.controller.spec.ts (4 tests) 14ms
-
- Test Files  7 passed (7)
-      Tests  43 passed (43)
-   Start at  12:50:53
-   Duration  4.61s (transform 1.87s, setup 0ms, import 7.03s, tests 988ms, environment 3ms)
-
- % Coverage report from v8
------------------------------------|---------|----------|---------|---------|------------------------------------
-File                               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
------------------------------------|---------|----------|---------|---------|------------------------------------
-All files                          |   90.57 |    85.71 |   97.18 |   90.57 |
- application/transaction/use-cases |   79.24 |    65.62 |     100 |   79.24 |
-  process-transaction.use-case.ts  |   79.24 |    65.62 |     100 |   79.24 | 87,107,124,131,144,176,198,205-218
- domain/customer                   |     100 |      100 |     100 |     100 |
-  customer.entity.ts               |     100 |      100 |     100 |     100 |
- domain/delivery                   |     100 |      100 |     100 |     100 |
-  delivery.entity.ts               |     100 |      100 |     100 |     100 |
- domain/product                    |     100 |      100 |     100 |     100 |
-  product.entity.ts                |     100 |      100 |     100 |     100 |
- domain/shared                     |     100 |      100 |     100 |     100 |
-  result.ts                        |     100 |      100 |     100 |     100 |
- domain/transaction                |   91.42 |    88.46 |     100 |   91.42 |
-  transaction.entity.ts            |   91.42 |    88.46 |     100 |   91.42 | 63,70,114
- infrastructure/http               |     100 |       50 |     100 |     100 |
-  app.controller.ts                |     100 |       50 |     100 |     100 | 4
-  app.service.ts                   |     100 |      100 |     100 |     100 |
- infrastructure/http/controllers   |   84.61 |    77.77 |     100 |   84.61 |
-  transaction.controller.ts        |   84.61 |    77.77 |     100 |   84.61 | 95-97
- infrastructure/http/dtos          |   71.42 |      100 |   33.33 |   71.42 |
-  create-transaction.dto.ts        |   71.42 |      100 |   33.33 |   71.42 | 82-97
------------------------------------|---------|----------|---------|---------|------------------------------------
 
 ## Data Model Design
 
