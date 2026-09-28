@@ -2,7 +2,6 @@ allowBuilds:
   '@prisma/engines': true
   esbuild: true
   prisma: true
-  workerd: set this to true or false
 overrides:
   '@hono/node-server@<1.19.10': ^1.19.10
   '@hono/node-server@<1.19.13': ^1.19.13

@@ -32,6 +32,11 @@ export type DeliveryCreationProps = {
 export class Delivery {
   private constructor(private readonly props: DeliveryProps) {}
 
+  // Rehydrates a delivery from already-validated persisted state, preserving its actual status.
+  static restore(props: DeliveryProps): Delivery {
+    return new Delivery(props);
+  }
+
   static create(
     props: DeliveryCreationProps,
   ): Result<Delivery, DeliveryCreationError> {

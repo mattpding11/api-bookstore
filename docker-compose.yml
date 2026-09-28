@@ -1,0 +1,39 @@
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    # Carga las variables desde tu archivo .env
+    env_file:
+      - .env
+    environment:
+      # Inyecta dinámicamente los valores para inicializar la BD
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api-bookstore:
+    build: .
+    ports:
+      - "3000:3000"
+    # Pasa todas las variables al contenedor de NestJS
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: PRODUCTION
+      PORT: 3000
+      # Sobrescribe el 'localhost' del .env para usar el DNS interno de Docker
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres-db:5432/${DB_NAME}?schema=public
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    # Corrección vital: debian slim usa 'bash'
+    command: ["bash", "-c", "npx prisma db push && npx prisma db seed && node dist/main.js"]
+
+volumes:
+  postgres_data:

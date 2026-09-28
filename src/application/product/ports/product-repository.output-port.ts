@@ -11,4 +11,5 @@ export const PRODUCT_REPOSITORY = Symbol('PRODUCT_REPOSITORY');
 export interface ProductRepositoryOutputPort {
   save(product: Product): Promise<Result<Product, ProductRepositoryError>>;
   findById(id: string): Promise<Result<Product | null, ProductRepositoryError>>;
+  findAll(): Promise<Result<Product[], ProductRepositoryError>>;
 }

@@ -44,6 +44,11 @@ export type TransactionCreationProps = {
 export class Transaction {
   private constructor(private readonly props: TransactionProps) {}
 
+  // Rehydrates a transaction from already-validated persisted state, preserving its actual status.
+  static restore(props: TransactionProps): Transaction {
+    return new Transaction(props);
+  }
+
   static create(
     props: TransactionCreationProps,
   ): Result<Transaction, TransactionCreationError> {
