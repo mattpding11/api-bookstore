@@ -85,4 +85,4 @@ Depende estrictamente de que exista una transacción.
 
 
 
-    Read the file #file:data-model.md and, of course, taking my skills into account:  #file:copilot-instructions.md and #attachment:.agents  . We’ll start with the domain layer. Generate only the pure domain entity for Product. It must be a pure TypeScript class, without database decorators, handling the price in cents, and validating that the stock is not negative in its constructor or creation method
+

@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DocumentType {
+  CC
+  CE
+  NIT
+  PASSPORT
+}
+
+enum TransactionStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  ERROR
+}
+
+enum DeliveryStatus {
+  PENDING
+  DISPATCHED
+  DELIVERED
+}
+
+model Product {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  priceCents   Int      @map("price_cents")
+  currency     String   @default("COP")
+  // CHECK (stock >= 0) is not expressible in Prisma; enforced by the domain entity.
+  stock        Int
+  imageUrl     String?  @map("image_url")
+  isActive     Boolean  @default(true) @map("is_active")
+  version      Int      @default(1)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  transactions Transaction[]
+
+  @@map("products")
+}
+
+model Customer {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  fullName       String   @map("full_name")
+  phoneNumber    String   @map("phone_number")
+  documentType   DocumentType @map("document_type")
+  documentNumber String   @map("document_number")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  transactions   Transaction[]
+
+  @@map("customers")
+}
+
+model Transaction {
+  id                 String            @id @default(uuid())
+  reference          String            @unique
+  wompiTransactionId String?           @unique @map("wompi_transaction_id")
+  productId          String            @map("product_id")
+  customerId         String            @map("customer_id")
+  status             TransactionStatus @default(PENDING)
+  productPriceCents  Int               @map("product_price_cents")
+  baseFeeCents       Int               @map("base_fee_cents")
+  deliveryFeeCents   Int               @map("delivery_fee_cents")
+  totalAmountCents   Int               @map("total_amount_cents")
+  paymentMethodType  String            @map("payment_method_type")
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+
+  product            Product           @relation(fields: [productId], references: [id])
+  customer           Customer          @relation(fields: [customerId], references: [id])
+  delivery           Delivery?
+
+  @@map("transactions")
+}
+
+model Delivery {
+  id            String         @id @default(uuid())
+  transactionId String         @unique @map("transaction_id")
+  addressLine   String         @map("address_line")
+  city          String
+  region        String
+  status        DeliveryStatus @default(PENDING)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  transaction   Transaction    @relation(fields: [transactionId], references: [id])
+
+  @@map("deliveries")
+}
