@@ -1,4 +1,4 @@
-export class Success<T, E> {
+export class Success<T> {
   readonly isSuccess = true as const;
   readonly isFailure = false as const;
 
@@ -9,7 +9,7 @@ export class Success<T, E> {
   }
 }
 
-export class Failure<T, E> {
+export class Failure<E> {
   readonly isSuccess = false as const;
   readonly isFailure = true as const;
 
@@ -20,12 +20,12 @@ export class Failure<T, E> {
   }
 }
 
-export type Result<T, E> = Success<T, E> | Failure<T, E>;
+export type Result<T, E> = Success<T> | Failure<E>;
 
 export function success<T, E = never>(value: T): Result<T, E> {
-  return new Success<T, E>(value);
+  return new Success<T>(value);
 }
 
 export function failure<E, T = never>(error: E): Result<T, E> {
-  return new Failure<T, E>(error);
+  return new Failure<E>(error);
 }

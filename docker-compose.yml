@@ -33,7 +33,7 @@ services:
       postgres-db:
         condition: service_healthy
     # Corrección vital: debian slim usa 'bash'
-    command: ["bash", "-c", "npx prisma db push && npx prisma db seed && node dist/main.js"]
+    command: ["bash", "-c", "pnpm exec prisma db push && pnpm exec prisma db seed && node dist/main.js"]
 
 volumes:
   postgres_data:
