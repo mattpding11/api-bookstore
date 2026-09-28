@@ -43,6 +43,11 @@ function buildDto(): CreateTransactionDto {
     },
     paymentToken: 'tok_stagtest_dummy_1234567890abcdef',
     deliveryFeeCents: 5_000,
+    delivery: {
+      addressLine: 'Cra. 59 # 27B-510',
+      city: 'Bello',
+      region: 'Antioquia',
+    },
   });
 }
 

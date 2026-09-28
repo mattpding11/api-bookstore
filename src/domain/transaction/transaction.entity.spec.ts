@@ -45,6 +45,26 @@ describe('Transaction', () => {
     expect(transaction.updatedAt).toBeInstanceOf(Date);
   });
 
+  // Regression test: Transaction only had a private `props` field, so JSON.stringify
+  // used to serialize `{ "props": {...} }` instead of the flat shape below.
+  it('serializes to a flat JSON object via toJSON()', () => {
+    const result = Transaction.create(buildValidProps());
+
+    expect(result.isSuccess).toBe(true);
+    if (!result.isSuccess) {
+      return;
+    }
+
+    const parsed = JSON.parse(JSON.stringify(result.getValue())) as Record<
+      string,
+      unknown
+    >;
+    expect(parsed).not.toHaveProperty('props');
+    expect(parsed.id).toBe('txn-1');
+    expect(parsed.reference).toBe('ORD-1');
+    expect(parsed.totalAmountCents).toBe(11_500);
+  });
+
   it('defaults createdAt/updatedAt to now when not provided, and honors them when provided', () => {
     const createdAt = new Date('2024-01-01T00:00:00.000Z');
     const updatedAt = new Date('2024-02-01T00:00:00.000Z');

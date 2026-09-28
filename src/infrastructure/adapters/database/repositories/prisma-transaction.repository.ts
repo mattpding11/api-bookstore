@@ -37,11 +37,15 @@ export class PrismaTransactionRepository implements TransactionRepositoryOutputP
   async updateStatus(
     id: string,
     status: TransactionStatus,
+    wompiTransactionId?: string | null,
   ): Promise<Result<Transaction, TransactionRepositoryError>> {
     try {
       const updated = await this.prisma.transaction.update({
         where: { id },
-        data: { status },
+        data: {
+          status,
+          ...(wompiTransactionId !== undefined ? { wompiTransactionId } : {}),
+        },
       });
       return success(TransactionMapper.toDomain(updated));
     } catch (error) {

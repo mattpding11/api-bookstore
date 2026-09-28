@@ -3,6 +3,8 @@ import type {
   CustomerCreationError,
   DocumentType,
 } from '../../../domain/customer/customer.entity.js';
+import { Delivery } from '../../../domain/delivery/delivery.entity.js';
+import type { DeliveryCreationError } from '../../../domain/delivery/delivery.entity.js';
 import { Product } from '../../../domain/product/product.entity.js';
 import { Transaction } from '../../../domain/transaction/transaction.entity.js';
 import type { TransactionCreationError } from '../../../domain/transaction/transaction.entity.js';
@@ -11,6 +13,10 @@ import {
   CustomerRepositoryError,
   CustomerRepositoryOutputPort,
 } from '../../customer/ports/customer-repository.port.output.js';
+import {
+  DeliveryRepositoryError,
+  DeliveryRepositoryOutputPort,
+} from '../../delivery/ports/delivery-repository.output-port.js';
 import { IdGeneratorOutputPort } from '../../product/ports/id-generator.output-port.js';
 import {
   ProductRepositoryError,
@@ -33,9 +39,16 @@ export type ProcessTransactionCustomerInput = {
   readonly documentNumber: string;
 };
 
+export type ProcessTransactionDeliveryInput = {
+  readonly addressLine: string;
+  readonly city: string;
+  readonly region: string;
+};
+
 export type ProcessTransactionInput = {
   readonly productId: string;
   readonly customer: ProcessTransactionCustomerInput;
+  readonly delivery: ProcessTransactionDeliveryInput;
   readonly baseFeeCents: number;
   readonly deliveryFeeCents: number;
   readonly paymentMethodType: string;
@@ -46,9 +59,11 @@ export type ProcessTransactionError =
   | ProductRepositoryError
   | CustomerRepositoryError
   | TransactionRepositoryError
+  | DeliveryRepositoryError
   | WompiPaymentError
   | CustomerCreationError
   | TransactionCreationError
+  | DeliveryCreationError
   | { readonly kind: 'PRODUCT_NOT_FOUND'; readonly message: string }
   | { readonly kind: 'OUT_OF_STOCK'; readonly message: string };
 
@@ -57,6 +72,7 @@ export class ProcessTransactionUseCase {
     private readonly productRepository: ProductRepositoryOutputPort,
     private readonly customerRepository: CustomerRepositoryOutputPort,
     private readonly transactionRepository: TransactionRepositoryOutputPort,
+    private readonly deliveryRepository: DeliveryRepositoryOutputPort,
     private readonly wompiGateway: WompiPaymentOutputPort,
     private readonly idGenerator: IdGeneratorOutputPort,
   ) {}
@@ -117,6 +133,24 @@ export class ProcessTransactionUseCase {
 
     const transaction = savedTransactionResult.value;
 
+    const newDeliveryResult = Delivery.create({
+      id: this.idGenerator.generate(),
+      transactionId: transaction.id,
+      addressLine: input.delivery.addressLine,
+      city: input.delivery.city,
+      region: input.delivery.region,
+    });
+    if (newDeliveryResult.isFailure) {
+      return failure(newDeliveryResult.error);
+    }
+
+    const savedDeliveryResult = await this.deliveryRepository.save(
+      newDeliveryResult.value,
+    );
+    if (savedDeliveryResult.isFailure) {
+      return failure(savedDeliveryResult.error);
+    }
+
     const chargeResult = await this.wompiGateway.charge({
       reference: transaction.reference,
       amountInCents: transaction.totalAmountCents,
@@ -135,13 +169,19 @@ export class ProcessTransactionUseCase {
       await this.transactionRepository.updateStatus(
         transaction.id,
         chargeResult.value.status,
+        chargeResult.value.wompiTransactionId,
       );
 
     if (updatedTransactionResult.isFailure) {
       return failure(updatedTransactionResult.error);
     }
 
-    if (chargeResult.value.status === 'APPROVED') {
+    // Wompi's sandbox settles asynchronously, so a charge is almost always PENDING here;
+    // reserve stock unless Wompi already told us the charge failed outright.
+    if (
+      chargeResult.value.status === 'APPROVED' ||
+      chargeResult.value.status === 'PENDING'
+    ) {
       await this.decreaseProductStock(product);
     }
 

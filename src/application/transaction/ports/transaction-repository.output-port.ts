@@ -18,5 +18,6 @@ export interface TransactionRepositoryOutputPort {
   updateStatus(
     id: string,
     status: TransactionStatus,
+    wompiTransactionId?: string | null,
   ): Promise<Result<Transaction, TransactionRepositoryError>>;
 }

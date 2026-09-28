@@ -57,41 +57,46 @@ $ pnpm run test:e2e
 $ pnpm run test:cov
 ```
 
- ✓ src/domain/transaction/transaction.entity.spec.ts (8 tests) 19ms
- ✓ src/application/transaction/use-cases/process-transaction.use-case.spec.ts (4 tests) 31ms
- ✓ src/domain/customer/customer.entity.spec.ts (7 tests) 36ms
- ✓ src/infrastructure/http/app.controller.spec.ts (1 test) 1065ms
-       ✓ should return "Server is running...."  1060ms
- ✓ src/infrastructure/http/controllers/transaction.controller.spec.ts (4 tests) 27ms
 
- Test Files  5 passed (5)
-      Tests  24 passed (24)
-   Start at  07:30:40
-   Duration  5.14s (transform 1.28s, setup 0ms, import 6.26s, tests 1.18s, environment 2ms)
+ ✓ src/domain/product/product.entity.spec.ts (7 tests) 22ms
+ ✓ src/domain/customer/customer.entity.spec.ts (7 tests) 23ms
+ ✓ src/domain/transaction/transaction.entity.spec.ts (9 tests) 22ms
+ ✓ src/domain/delivery/delivery.entity.spec.ts (7 tests) 24ms
+ ✓ src/application/transaction/use-cases/process-transaction.use-case.spec.ts (8 tests) 45ms
+ ✓ src/infrastructure/http/app.controller.spec.ts (1 test) 837ms
+       ✓ should return "Server is running...."  832ms
+ ✓ src/infrastructure/http/controllers/transaction.controller.spec.ts (4 tests) 14ms
+
+ Test Files  7 passed (7)
+      Tests  43 passed (43)
+   Start at  12:50:53
+   Duration  4.61s (transform 1.87s, setup 0ms, import 7.03s, tests 988ms, environment 3ms)
 
  % Coverage report from v8
------------------------------------|---------|----------|---------|---------|-------------------------------
+-----------------------------------|---------|----------|---------|---------|------------------------------------
 File                               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
------------------------------------|---------|----------|---------|---------|-------------------------------
-All files                          |   87.57 |    80.19 |   96.49 |   87.57 |
- application/transaction/use-cases |   78.26 |    57.69 |     100 |   78.26 |
-  process-transaction.use-case.ts  |   78.26 |    57.69 |     100 |   78.26 | 71,91,108,115,141,158,165-178
+-----------------------------------|---------|----------|---------|---------|------------------------------------
+All files                          |   90.57 |    85.71 |   97.18 |   90.57 |
+ application/transaction/use-cases |   79.24 |    65.62 |     100 |   79.24 |
+  process-transaction.use-case.ts  |   79.24 |    65.62 |     100 |   79.24 | 87,107,124,131,144,176,198,205-218
  domain/customer                   |     100 |      100 |     100 |     100 |
   customer.entity.ts               |     100 |      100 |     100 |     100 |
- domain/product                    |   81.81 |     87.5 |    92.3 |   81.81 |
-  product.entity.ts                |   81.81 |     87.5 |    92.3 |   81.81 | 46,53,60,126
+ domain/delivery                   |     100 |      100 |     100 |     100 |
+  delivery.entity.ts               |     100 |      100 |     100 |     100 |
+ domain/product                    |     100 |      100 |     100 |     100 |
+  product.entity.ts                |     100 |      100 |     100 |     100 |
  domain/shared                     |     100 |      100 |     100 |     100 |
   result.ts                        |     100 |      100 |     100 |     100 |
- domain/transaction                |   91.17 |    88.46 |     100 |   91.17 |
-  transaction.entity.ts            |   91.17 |    88.46 |     100 |   91.17 | 63,70,114
+ domain/transaction                |   91.42 |    88.46 |     100 |   91.42 |
+  transaction.entity.ts            |   91.42 |    88.46 |     100 |   91.42 | 63,70,114
  infrastructure/http               |     100 |       50 |     100 |     100 |
   app.controller.ts                |     100 |       50 |     100 |     100 | 4
   app.service.ts                   |     100 |      100 |     100 |     100 |
  infrastructure/http/controllers   |   84.61 |    77.77 |     100 |   84.61 |
-  transaction.controller.ts        |   84.61 |    77.77 |     100 |   84.61 | 90-92
- infrastructure/http/dtos          |   83.33 |      100 |      50 |   83.33 |
-  create-transaction.dto.ts        |   83.33 |      100 |      50 |   83.33 | 65
------------------------------------|---------|----------|---------|---------|-------------------------------
+  transaction.controller.ts        |   84.61 |    77.77 |     100 |   84.61 | 95-97
+ infrastructure/http/dtos          |   71.42 |      100 |   33.33 |   71.42 |
+  create-transaction.dto.ts        |   71.42 |      100 |   33.33 |   71.42 | 82-97
+-----------------------------------|---------|----------|---------|---------|------------------------------------
 
 ## Data Model Design
 

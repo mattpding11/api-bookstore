@@ -55,6 +55,23 @@ export class CustomerDto {
   readonly documentNumber!: string;
 }
 
+export class DeliveryDto {
+  @ApiProperty({ example: 'Cra. 59 # 27B-510' })
+  @IsString({ message: 'addressLine must be a string' })
+  @IsNotEmpty({ message: 'addressLine must not be empty' })
+  readonly addressLine!: string;
+
+  @ApiProperty({ example: 'Bello' })
+  @IsString({ message: 'city must be a string' })
+  @IsNotEmpty({ message: 'city must not be empty' })
+  readonly city!: string;
+
+  @ApiProperty({ example: 'Antioquia' })
+  @IsString({ message: 'region must be a string' })
+  @IsNotEmpty({ message: 'region must not be empty' })
+  readonly region!: string;
+}
+
 export class CreateTransactionDto {
   @ApiProperty({ example: 'b3f1c9d2-4e3a-4c8b-9a1a-2f6d8e5c7a10' })
   @IsUUID('4', { message: 'productId must be a valid UUID' })
@@ -74,4 +91,9 @@ export class CreateTransactionDto {
   @IsInt({ message: 'deliveryFeeCents must be an integer' })
   @Min(0, { message: 'deliveryFeeCents must not be negative' })
   readonly deliveryFeeCents!: number;
+
+  @ApiProperty({ type: DeliveryDto })
+  @ValidateNested({ message: 'delivery must be a valid delivery object' })
+  @Type(() => DeliveryDto)
+  readonly delivery!: DeliveryDto;
 }

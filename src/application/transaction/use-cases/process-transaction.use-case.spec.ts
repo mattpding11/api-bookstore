@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProcessTransactionUseCase } from './process-transaction.use-case.js';
 import { Product } from '../../../domain/product/product.entity.js';
 import { Customer } from '../../../domain/customer/customer.entity.js';
+import { Delivery } from '../../../domain/delivery/delivery.entity.js';
 import {
   Transaction,
   type TransactionStatus,
@@ -15,6 +16,10 @@ import type {
   CustomerRepositoryError,
   CustomerRepositoryOutputPort,
 } from '../../customer/ports/customer-repository.port.output.js';
+import type {
+  DeliveryRepositoryError,
+  DeliveryRepositoryOutputPort,
+} from '../../delivery/ports/delivery-repository.output-port.js';
 import type {
   TransactionRepositoryError,
   TransactionRepositoryOutputPort,
@@ -85,6 +90,11 @@ const input = {
     documentType: 'CC' as const,
     documentNumber: '1020304050',
   },
+  delivery: {
+    addressLine: 'Cra. 59 # 27B-510',
+    city: 'Bello',
+    region: 'Antioquia',
+  },
   baseFeeCents: 500,
   deliveryFeeCents: 1_000,
   paymentMethodType: 'CARD',
@@ -97,6 +107,7 @@ describe('ProcessTransactionUseCase', () => {
   let productRepository: ProductRepositoryOutputPort;
   let customerRepository: CustomerRepositoryOutputPort;
   let transactionRepository: TransactionRepositoryOutputPort;
+  let deliveryRepository: DeliveryRepositoryOutputPort;
   let wompiGateway: WompiPaymentOutputPort;
   let idGenerator: IdGeneratorOutputPort;
   let useCase: ProcessTransactionUseCase;
@@ -150,6 +161,19 @@ describe('ProcessTransactionUseCase', () => {
       ),
     };
 
+    deliveryRepository = {
+      save: vi.fn(
+        (
+          delivery: Delivery,
+        ): Promise<Result<Delivery, DeliveryRepositoryError>> =>
+          Promise.resolve(success(delivery)),
+      ),
+      updateStatus: vi.fn(
+        (): Promise<Result<Delivery, DeliveryRepositoryError>> =>
+          Promise.reject(new Error('not used in these tests')),
+      ),
+    };
+
     wompiGateway = {
       charge: vi.fn(
         (
@@ -170,6 +194,7 @@ describe('ProcessTransactionUseCase', () => {
       productRepository,
       customerRepository,
       transactionRepository,
+      deliveryRepository,
       wompiGateway,
       idGenerator,
     );
@@ -186,9 +211,59 @@ describe('ProcessTransactionUseCase', () => {
     expect(transactionRepository.updateStatus).toHaveBeenCalledWith(
       expect.any(String),
       'APPROVED',
+      'wompi-1',
     );
     // Stock is decremented as a best-effort side effect once the payment is approved.
     expect(productRepository.save).toHaveBeenCalledTimes(1);
+  });
+
+  it('creates and persists the delivery tied to the transaction before charging', async () => {
+    await useCase.execute(input);
+
+    expect(deliveryRepository.save).toHaveBeenCalledTimes(1);
+    const savedTransaction = vi.mocked(transactionRepository.save).mock
+      .calls[0]?.[0];
+    const savedDelivery = vi.mocked(deliveryRepository.save).mock.calls[0]?.[0];
+    expect(savedDelivery?.transactionId).toBe(savedTransaction?.id);
+    expect(savedDelivery?.addressLine).toBe(input.delivery.addressLine);
+    expect(savedDelivery?.city).toBe(input.delivery.city);
+    expect(savedDelivery?.region).toBe(input.delivery.region);
+  });
+
+  it('returns a failure without charging when the delivery fails to save', async () => {
+    vi.mocked(deliveryRepository.save).mockResolvedValueOnce(
+      failure({ kind: 'REPOSITORY_ERROR', message: 'db unavailable' }),
+    );
+
+    const result = await useCase.execute(input);
+
+    expect(result.isFailure).toBe(true);
+    if (result.isFailure) {
+      expect(result.getError().kind).toBe('REPOSITORY_ERROR');
+    }
+    expect(wompiGateway.charge).not.toHaveBeenCalled();
+  });
+
+  it('reserves stock when Wompi leaves the charge as PENDING (sandbox default)', async () => {
+    vi.mocked(wompiGateway.charge).mockResolvedValueOnce(
+      success({ wompiTransactionId: 'wompi-2', status: 'PENDING' }),
+    );
+
+    const result = await useCase.execute(input);
+
+    expect(result.isSuccess).toBe(true);
+    expect(productRepository.save).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not touch stock when Wompi declines the charge', async () => {
+    vi.mocked(wompiGateway.charge).mockResolvedValueOnce(
+      success({ wompiTransactionId: 'wompi-3', status: 'DECLINED' }),
+    );
+
+    const result = await useCase.execute(input);
+
+    expect(result.isSuccess).toBe(true);
+    expect(productRepository.save).not.toHaveBeenCalled();
   });
 
   it('marks the transaction as ERROR and returns a failure when the payment gateway rejects the charge', async () => {

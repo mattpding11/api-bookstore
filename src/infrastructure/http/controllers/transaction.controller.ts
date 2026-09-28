@@ -63,6 +63,11 @@ export class TransactionController {
         documentType: dto.customer.documentType,
         documentNumber: dto.customer.documentNumber,
       },
+      delivery: {
+        addressLine: dto.delivery.addressLine,
+        city: dto.delivery.city,
+        region: dto.delivery.region,
+      },
       baseFeeCents: BASE_FEE_CENTS,
       deliveryFeeCents: dto.deliveryFeeCents,
       paymentMethodType: 'CARD',

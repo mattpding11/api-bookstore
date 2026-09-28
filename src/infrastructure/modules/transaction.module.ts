@@ -13,6 +13,10 @@ import {
   TransactionRepositoryOutputPort,
 } from '../../application/transaction/ports/transaction-repository.output-port.js';
 import {
+  DELIVERY_REPOSITORY,
+  DeliveryRepositoryOutputPort,
+} from '../../application/delivery/ports/delivery-repository.output-port.js';
+import {
   WOMPI_PAYMENT_GATEWAY,
   WompiPaymentOutputPort,
 } from '../../application/transaction/ports/wompi-payment.output-port.js';
@@ -23,6 +27,7 @@ import {
 import { PrismaProductRepository } from '../adapters/database/repositories/prisma-product.repository.js';
 import { PrismaCustomerRepository } from '../adapters/database/repositories/prisma-customer.repository.js';
 import { PrismaTransactionRepository } from '../adapters/database/repositories/prisma-transaction.repository.js';
+import { PrismaDeliveryRepository } from '../adapters/database/repositories/prisma-delivery.repository.js';
 import { WompiHttpAdapter } from '../adapters/wompi/wompi-http.adapter.js';
 import { UuidIdGeneratorAdapter } from '../adapters/shared/uuid-id-generator.adapter.js';
 import { TransactionController } from '../http/controllers/transaction.controller.js';
@@ -33,6 +38,7 @@ import { TransactionController } from '../http/controllers/transaction.controlle
     { provide: PRODUCT_REPOSITORY, useClass: PrismaProductRepository },
     { provide: CUSTOMER_REPOSITORY, useClass: PrismaCustomerRepository },
     { provide: TRANSACTION_REPOSITORY, useClass: PrismaTransactionRepository },
+    { provide: DELIVERY_REPOSITORY, useClass: PrismaDeliveryRepository },
     { provide: WOMPI_PAYMENT_GATEWAY, useClass: WompiHttpAdapter },
     // Required by ProcessTransactionUseCase to mint Transaction/Customer ids; not one of the "four" ports but unavoidable.
     { provide: ID_GENERATOR, useClass: UuidIdGeneratorAdapter },
@@ -42,6 +48,7 @@ import { TransactionController } from '../http/controllers/transaction.controlle
         productRepository: ProductRepositoryOutputPort,
         customerRepository: CustomerRepositoryOutputPort,
         transactionRepository: TransactionRepositoryOutputPort,
+        deliveryRepository: DeliveryRepositoryOutputPort,
         wompiGateway: WompiPaymentOutputPort,
         idGenerator: IdGeneratorOutputPort,
       ) =>
@@ -49,6 +56,7 @@ import { TransactionController } from '../http/controllers/transaction.controlle
           productRepository,
           customerRepository,
           transactionRepository,
+          deliveryRepository,
           wompiGateway,
           idGenerator,
         ),
@@ -56,6 +64,7 @@ import { TransactionController } from '../http/controllers/transaction.controlle
         PRODUCT_REPOSITORY,
         CUSTOMER_REPOSITORY,
         TRANSACTION_REPOSITORY,
+        DELIVERY_REPOSITORY,
         WOMPI_PAYMENT_GATEWAY,
         ID_GENERATOR,
       ],
