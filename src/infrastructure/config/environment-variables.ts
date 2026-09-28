@@ -1,4 +1,12 @@
-import { IsEnum, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  IsUrl,
+  Max,
+  Min,
+} from 'class-validator';
 
 export enum Environment {
   Development = 'DEV',
@@ -14,6 +22,10 @@ export class EnvironmentVariables {
   @Min(0)
   @Max(65535)
   PORT: number = 3000;
+
+  @IsString()
+  @IsUrl({ require_tld: false })
+  FRONTEND_URL!: string;
 
   @IsString()
   @IsNotEmpty()

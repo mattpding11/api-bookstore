@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule, ObserveInstrument } from './app.module.js';
@@ -12,7 +13,7 @@ import {
 } from './infrastructure/config/environment-variables.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     instrument: ObserveInstrument,
     logger:
       process.env.NODE_ENV === Environment.Production
@@ -27,6 +28,15 @@ async function bootstrap() {
   // must use { httpOnly: true, secure: process.env.NODE_ENV === 'PRODUCTION', sameSite: 'strict' }.
   app.use(cookieParser());
   app.setGlobalPrefix('api/v1');
+
+  // Wildcard origins are prohibited; credentials required for HttpOnly/SameSite=Strict cookies to work.
+  app.enableCors({
+    origin: configService.get('FRONTEND_URL', { infer: true }),
+    credentials: true,
+  });
+
+  // Only a card token and small metadata are ever sent; anything larger is treated as an attack.
+  app.useBodyParser('json', { limit: '10kb' });
 
   const swaggerDocument = SwaggerModule.createDocument(
     app,

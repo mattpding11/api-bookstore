@@ -57,6 +57,113 @@ $ pnpm run test:e2e
 $ pnpm run test:cov
 ```
 
+ ✓ src/domain/transaction/transaction.entity.spec.ts (8 tests) 19ms
+ ✓ src/application/transaction/use-cases/process-transaction.use-case.spec.ts (4 tests) 31ms
+ ✓ src/domain/customer/customer.entity.spec.ts (7 tests) 36ms
+ ✓ src/infrastructure/http/app.controller.spec.ts (1 test) 1065ms
+       ✓ should return "Server is running...."  1060ms
+ ✓ src/infrastructure/http/controllers/transaction.controller.spec.ts (4 tests) 27ms
+
+ Test Files  5 passed (5)
+      Tests  24 passed (24)
+   Start at  07:30:40
+   Duration  5.14s (transform 1.28s, setup 0ms, import 6.26s, tests 1.18s, environment 2ms)
+
+ % Coverage report from v8
+-----------------------------------|---------|----------|---------|---------|-------------------------------
+File                               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-----------------------------------|---------|----------|---------|---------|-------------------------------
+All files                          |   87.57 |    80.19 |   96.49 |   87.57 |
+ application/transaction/use-cases |   78.26 |    57.69 |     100 |   78.26 |
+  process-transaction.use-case.ts  |   78.26 |    57.69 |     100 |   78.26 | 71,91,108,115,141,158,165-178
+ domain/customer                   |     100 |      100 |     100 |     100 |
+  customer.entity.ts               |     100 |      100 |     100 |     100 |
+ domain/product                    |   81.81 |     87.5 |    92.3 |   81.81 |
+  product.entity.ts                |   81.81 |     87.5 |    92.3 |   81.81 | 46,53,60,126
+ domain/shared                     |     100 |      100 |     100 |     100 |
+  result.ts                        |     100 |      100 |     100 |     100 |
+ domain/transaction                |   91.17 |    88.46 |     100 |   91.17 |
+  transaction.entity.ts            |   91.17 |    88.46 |     100 |   91.17 | 63,70,114
+ infrastructure/http               |     100 |       50 |     100 |     100 |
+  app.controller.ts                |     100 |       50 |     100 |     100 | 4
+  app.service.ts                   |     100 |      100 |     100 |     100 |
+ infrastructure/http/controllers   |   84.61 |    77.77 |     100 |   84.61 |
+  transaction.controller.ts        |   84.61 |    77.77 |     100 |   84.61 | 90-92
+ infrastructure/http/dtos          |   83.33 |      100 |      50 |   83.33 |
+  create-transaction.dto.ts        |   83.33 |      100 |      50 |   83.33 | 65
+-----------------------------------|---------|----------|---------|---------|-------------------------------
+
+## Data Model Design
+
+The schema is defined in [prisma/schema.prisma](prisma/schema.prisma) (see also [docs/data-model.md](docs/data-model.md) for the field-level rationale). The Entity-Relationship diagram below reflects its tables and relationships exactly:
+
+```mermaid
+erDiagram
+    PRODUCT ||--o{ TRANSACTION : "is sold in"
+    CUSTOMER ||--o{ TRANSACTION : places
+    TRANSACTION ||--o| DELIVERY : has
+
+    PRODUCT {
+        string id PK
+        string title
+        string description
+        int price_cents
+        string currency
+        int stock
+        string image_url
+        boolean is_active
+        int version
+        datetime created_at
+        datetime updated_at
+    }
+
+    CUSTOMER {
+        string id PK
+        string email UK
+        string full_name
+        string phone_number
+        string document_type
+        string document_number
+        datetime created_at
+        datetime updated_at
+    }
+
+    TRANSACTION {
+        string id PK
+        string reference UK
+        string wompi_transaction_id UK
+        string product_id FK
+        string customer_id FK
+        string status
+        int product_price_cents
+        int base_fee_cents
+        int delivery_fee_cents
+        int total_amount_cents
+        string payment_method_type
+        datetime created_at
+        datetime updated_at
+    }
+
+    DELIVERY {
+        string id PK
+        string transaction_id FK
+        string address_line
+        string city
+        string region
+        string status
+        datetime created_at
+        datetime updated_at
+    }
+```
+
+- **PRODUCT (1) — (N) TRANSACTION**: a product can appear in many transactions; each transaction snapshots the product's price at purchase time so later price changes never rewrite history.
+- **CUSTOMER (1) — (N) TRANSACTION**: a customer can place many transactions and is resolved (or created) by email.
+- **TRANSACTION (1) — (0..1) DELIVERY**: a delivery is optional and only ever depends on an existing transaction.
+
+## Unit Tests and Coverage
+
+Unit tests in this project run on [Vitest](https://vitest.dev) (Jest-compatible API: `describe`/`it`/`expect` globals plus `vi.fn()` for mocks) via `pnpm run test`, with coverage collected through `pnpm run test:cov` (`@vitest/coverage-v8`). The suite targets over 80% coverage across the domain entities, application use cases, and infrastructure controllers.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
