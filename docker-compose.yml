@@ -20,7 +20,7 @@ services:
   api-bookstore:
     build: .
     ports:
-      - "3000:3000"
+      - "80:3000"
     # Pasa todas las variables al contenedor de NestJS
     env_file:
       - .env
