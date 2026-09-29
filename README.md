@@ -1,6 +1,6 @@
 
 # URL PUBLICA: Backend (API en EC2):  http://ec2-18-224-93-185.us-east-2.compute.amazonaws.com/api/v1
-# API DOC: https://github.com/mattpding11/api-bookstore/blob/main/api-doc.md
+# API DOC: [Documentacion API](./api-doc.md)
 # SWAGGER: http://localhost:3000/api/v1/docs (revisarlo en local)
 <br>
 <br>
