@@ -58,6 +58,6 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.enableShutdownHooks();
 
-  await app.listen(configService.get('PORT', { infer: true }));
+  await app.listen(configService.get('PORT', { infer: true }), "0.0.0.0");
 }
 await bootstrap();
