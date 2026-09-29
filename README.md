@@ -1,3 +1,8 @@
+
+# URL PUBLICA: Backend (API en Elastic Beanstalk):  http://apibookstore-mateo.us-east-2.elasticbeanstalk.com/api/v1
+
+<br>
+<br>
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
