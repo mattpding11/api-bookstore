@@ -1,5 +1,5 @@
 
-# URL PUBLICA: Backend (API en Elastic Beanstalk):  http://apibookstore-mateo.us-east-2.elasticbeanstalk.com/api/v1   
+# URL PUBLICA: Backend (API en Elastic Beanstalk):  http://apibookstore-mateo.us-east-2.elasticbeanstalk.com/api/v1
 
 <br>
 <br>
