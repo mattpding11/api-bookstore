@@ -42,4 +42,6 @@ COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 # El "pnpm install --prod" de arriba no trae el cliente generado del builder; hay que regenerarlo aquí
 RUN pnpm exec prisma generate
 
+CMD ["bash", "-c", "pnpm exec prisma db push && pnpm exec prisma db seed && node dist/main.js"]
+
 # (El CMD lo sigue inyectando tu docker-compose.yml)
