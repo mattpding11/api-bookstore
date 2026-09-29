@@ -1,6 +1,6 @@
 
 # URL PUBLICA: Backend (API en EC2):  http://ec2-18-224-93-185.us-east-2.compute.amazonaws.com/api/v1
-
+# SWAGGER: http://localhost:3000/api/v1/docs (revisarlo en local)
 <br>
 <br>
 <p align="center">
