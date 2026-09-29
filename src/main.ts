@@ -60,4 +60,4 @@ async function bootstrap() {
 
   await app.listen(configService.get('PORT', { infer: true }), "0.0.0.0");
 }
-await bootstrap();
+await bootstrap();  
